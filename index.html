@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF -8 ">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SMART HOME</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <link rel= "stylesheet" href="./style.css">
+    <script type="text/javascript" src="https://unpkg.com/xlsx@0.15.1/dist/xlsx.full.min.js"></script>
+
+</head>
+
+
+
+
+<body background="img/lab2-backgr.gif">
+
+    
+   
+
+   
+    
+    <div id="chartContainer" style="height: 370px; width:100%;"></div>
+    <script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
+
+   
+   <div  class= "container">
+            <header>
+                <a href="logo"><img src="img/lab2-1.PNG"></a>
+            </header>
+        
+            <slogan>
+                <div id="tieude">
+                    <h2><b>SMART HOME</b></h2>
+                </div>
+            </slogan>
+          
+            <bang>
+                <div class="row">
+                    <div id="box1">
+                        <div id="khung1">
+                            <h1><b>Nhiệt Độ</b></h1>
+                            <h1 id ="nhietdo"></h1>
+                          
+                        </div>
+                        <div id= "khung3" >
+                            <h1><b>Không khí</b></h1>
+                            <h1 id = "khongkhi"></h1>
+                        </div>
+                        <img src="img/lab2-quatoff.png" class="lab2-quaton" id="quat" alt="">
+                       
+                        <button type="button" id="btn1"class="btn waves-effect waves-lights">ON</button>
+                        <button type="button" id="btn2"class="btn waves-effect waves-lights">OFF</button>
+                        </div>
+                    
+                    
+                    <div id="box2">
+                        <div id="khung2" >
+                            <h1><b>Độ ẩm</b></h1>
+                            <h1 id="doam"></h1>
+                        </div>
+                        <img src="img/lab2-denoff.jpg" class="denon" id="tuoi" alt="">
+                        <img src="img/airconditionoff.png" class="maylanhon" id="maylanh" alt="">
+                    
+                        <button type="button" id="btn3"class="btn waves-effect waves-lights">ON</button>
+                        <button type="button" id="btn4"class="btn waves-effect waves-lights">OFF</button>
+                        <button type="button" id="btn5"class="btn waves-effect waves-lights">ON</button>
+                        <button type="button" id="btn6"class="btn waves-effect waves-lights">OFF</button>
+                        <button type="button" id="btn7"class="btn waves-effect waves-lights">Biểu đồ độ ẩm</button>
+                        <button type="button" id="btn8"class="btn waves-effect waves-lights">Biểu đồ không khí</button>
+                        <button type="button" id="btn9"class="btn waves-effect waves-lights">MAIN</button>
+                   
+                        <h1 id="canhbao">Nhiệt độ ổn định</h1>
+                        <h1 id="canhbaodoam">Nhiệt độ ổn định</h1>
+                        <h1 id="canhbaokk">Không khí ổn định</h1>
+                    </div>
+                </div>
+            </bang>
+
+    <footer>
+               
+                    
+     </footer>      
+    </div>
+    <button id ="xuatdata" onclick="ExportToExcel('xlsx')">Xuất Data</button>
+    <h1 id="doaml"></h1>
+    <h1 id="doaml1"></h1>
+    <table id="tbl_exporttable_to_xls" border="1">
+        <thead>
+            <th>Ngày tháng năm</th>
+            <th>Thời gian</th>
+            <th>Nhiệt độ</th>
+            <th>Độ ẩm</th>
+            <th>Không khí</th>
+        </thead>
+       <tbody>
+           
+            
+        </tbody>
+    </table>
+    <script type="module">
+     // Import the functions you need from the SDKs you need
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/9.5.0/firebase-app.js";
+  // TODO: Add SDKs for Firebase products that you want to use
+  // https://firebase.google.com/docs/web/setup#available-libraries
+
+  // Your web app's Firebase configuration
+  const firebaseConfig = {
+    apiKey: "AIzaSyB4AQohzuoGIoJ8yaZz-q8BbBlbe3S1s6Y",
+    authDomain: "hongphu-doan.firebaseapp.com",
+    databaseURL: "https://hongphu-doan-default-rtdb.firebaseio.com",
+    projectId: "hongphu-doan",
+    storageBucket: "hongphu-doan.appspot.com",
+    messagingSenderId: "634646302",
+    appId: "1:634646302:web:babbf526c880c59942230f",
+    measurementId: "G-8RTLLL820S"
+  };
+
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+  import {getDatabase, ref, get, set, onValue, child, update, remove} 
+  from "https://www.gstatic.com/firebasejs/9.5.0/firebase-database.js";
+        const db = getDatabase();
+
+        var Btn1 = document.getElementById("btn1")
+        var Btn2 = document.getElementById("btn2")
+        var Btn3 = document.getElementById("btn3")
+        var Btn4 = document.getElementById("btn4")
+        var Btn5 = document.getElementById("btn5")
+        var Btn6 = document.getElementById("btn6")
+        var Btn7 = document.getElementById("btn7")
+        var Btn8 = document.getElementById("btn8")
+        var Btn10 = document.getElementById("btn10")
+
+        var onquat = "batquat";
+   var offquat = "tatquat";
+   var onden = "on";
+   var offden = "off";
+   var onmaylanh ="11";
+   var offmaylanh = "22";
+   var stateAir = false;
+//    funtion bật quạt
+   function InsertData(){
+    document.getElementById("quat").setAttribute("src","./img/lab2-quaton.png");
+       set(ref(db,"hihihi"),{
+Quat: onquat,
+
+       })
+    
+   }
+   
+   Btn1.addEventListener('click', InsertData);
+   // funtion tắt quạt
+   function offquat1(){
+    document.getElementById("quat").setAttribute("src","./img/lab2-quatoff.png");
+    
+
+       set(ref(db,"hihihi"),{
+          Quat: offquat,
+         
+       })
+   }
+   Btn2.addEventListener('click', offquat1)
+
+   function onden1(){
+
+    document.getElementById("tuoi").setAttribute("src","./img/sang.png");
+       set(ref(db,"hahaha"),{
+           Den: onden,
+ 
+       })
+   }
+Btn3.addEventListener('click', onden1)
+
+function offden1(){
+    document.getElementById("tuoi").setAttribute("src","./img/lab2-denoff.jpg");
+       set(ref(db,"hahaha"),{
+           Den: offden,
+       })
+   }
+Btn4.addEventListener('click', offden1)
+
+function onmaylanh1(){
+
+document.getElementById("maylanh").setAttribute("src","./img/aircondition.png");
+   set(ref(db,"hohoho"),{
+       Maylanh: onmaylanh,
+  
+   })
+}
+Btn5.addEventListener('click', onmaylanh1)
+
+function offmaylanh1(){
+    document.getElementById("maylanh").setAttribute("src","./img/airconditionoff.png");
+       set(ref(db,"hohoho"),{
+           Maylanh: offmaylanh,
+       })
+   }
+
+   Btn6.addEventListener('click', offmaylanh1)
+     //********************************* web lấy dữ liệu***********************************************//
+
+  
+   //kiểm tra để thay đổi hình ảnh trạng thái các thiết bị 
+
+const ktden = ref(db,'hahaha/'+'/Den');
+onValue(ktden,(snapshot)=>{
+    const trangthai = snapshot.val();
+    if(trangthai == "\"off\""||trangthai == "off"){
+        document.getElementById("tuoi").setAttribute("src","./img/lab2-denoff.jpg");
+    }
+    if(trangthai == '\"on\"'||trangthai == "on"){
+        document.getElementById("tuoi").setAttribute("src","./img/sang.png");
+    }
+  
+})
+
+
+
+
+
+
+
+
+const ktquat = ref(db,'hihihi/'+'/Quat');
+onValue(ktquat,(snapshot)=>{
+    const trangthaiq = snapshot.val();
+  
+    if(trangthaiq == '\"batquat\"'||trangthaiq == 'batquat'){
+        document.getElementById("quat").setAttribute("src","./img/lab2-quaton.png");
+    }
+    if(trangthaiq == '\"tatquat\"'||trangthaiq == 'tatquat'){
+        document.getElementById("quat").setAttribute("src","./img/lab2-quatoff.png");
+    }
+   
+
+})
+
+
+
+
+const ktml = ref(db,'hohoho/'+'/Maylanh');
+onValue(ktml,(snapshot)=>{
+    const trangthaiml = snapshot.val();
+    
+    if(trangthaiml == '\"11\"'||trangthaiml == '11'){
+        document.getElementById("maylanh").setAttribute("src","./img/aircondition.png");
+    }
+    if(trangthaiml == '\"22\"'||trangthaiml == '22'){
+        document.getElementById("maylanh").setAttribute("src","./img/airconditionoff.png");
+    }
+
+})
+
+
+ 
+        
+
+
+   
+
+
+// lấy các giá trị từ firebase để hiển thị
+
+const getdoam = ref(db, 'taolao/doam' );
+onValue(getdoam, (snapshot) => {
+    const doamnhan = snapshot.val();
+  document.getElementById("doam").innerText = snapshot.val()+" %";
+  var ddd = doamnhan
+const dddd = Number(ddd)
+
+
+if(dddd>70){
+    document.getElementById("canhbaodoam").innerText ="Độ ẩm cao"
+}
+  
+  if(dddd < 20){
+    document.getElementById("canhbaodoam").innerText ="Độ ẩm thấp"
+}
+if(dddd >= 20 && dddd <=70){
+    document.getElementById("canhbaodoam").innerText ="Độ ẩm ổn định"
+}
+
+});
+
+const getkhongkhi = ref(db, 'taolao/Không khí' );
+onValue(getkhongkhi, (snapshot) => {
+ const khongkhinhan =snapshot.val();
+  document.getElementById("khongkhi").innerText = snapshot.val()+" PPM";
+  var kk = khongkhinhan
+const kkhi = Number(kk)
+
+
+
+  
+  if(kkhi >300){
+    document.getElementById("canhbaokk").innerText ="Chất lượng không khí xấu"
+}
+if(kkhi <= 300){
+    document.getElementById("canhbaokk").innerText ="Chất lượng không khí ổn định"
+}
+
+});
+
+
+// tạo biểu đồ
+
+window.onload = function () {
+
+var dps = []; // dataPoints
+var chart = new CanvasJS.Chart("chartContainer", {
+	title :{
+		text: "Biểu đồ nhiệt độ"
+	},
+	data: [{
+		type: "line",
+		dataPoints: dps
+	}]
+});
+
+var xVal = 0;
+var yVal = 100; 
+
+var updateInterval = 1000;
+var dataLength = 20; // number of dataPoints visible at any point
+
+var updateChart = function (count) {
+
+	count = count || 1;
+
+    
+  
+
+    
+
+
+
+    const starCountRef = ref(db, 'taolao/temp' );
+onValue(starCountRef, (snapshot) => {
+ const nhietdonhan = snapshot.val();
+  
+
+ document.getElementById("nhietdo").innerText = nhietdonhan+ " °C";
+ var c = nhietdonhan;
+  
+ for (var j = 0; j < count; j++) {
+
+const dd = Number(c)
+
+var d = new Date();
+if(dd>27){
+    document.getElementById("canhbao").innerText ="Nhiệt độ cao"
+}
+  
+  if(dd < 17){
+    document.getElementById("canhbao").innerText ="Nhiệt độ thấp"
+}
+if(dd >= 17 && dd <=27){
+    document.getElementById("canhbao").innerText ="Nhiệt độ ổn định"
+}
+
+
+xVal = d;
+
+yVal =dd;
+dps.push({
+    x: xVal,
+    y: yVal,
+    
+});
+xVal++;
+}
+
+});
+
+	
+
+	if (dps.length > dataLength) {
+		dps.shift();
+	}
+
+	chart.render();
+};
+
+updateChart(dataLength);
+setInterval(function(){updateChart()}, updateInterval);
+
+
+
+
+}
+
+
+  
+
+
+function Bieudodoam() {
+			 window.location="https://nguyenhongphu2k.github.io/airchart/";
+		  }
+
+ Btn7.addEventListener('click', Bieudodoam)
+
+ function Bieudokhongkhi() {
+			 window.location="https://nguyenhongphu2k.github.io/khongkhichart/";
+		  }
+
+ Btn8.addEventListener('click', Bieudokhongkhi)
+
+
+
+
+ function myFunction() {
+     const today = new Date();
+     var h = today.getHours();//lấy dữ liệu ra
+      var m = today.getMinutes();
+      var s = today.getSeconds();
+      var ngay = today.getDate();
+      var thang = today.getMonth();
+      var thangso = Number(thang);
+      var thangtru = thangso +1;
+      var nam = today.getFullYear();
+  var table = document.getElementById("tbl_exporttable_to_xls");
+  var row = table.insertRow(1);
+  var cell1 = row.insertCell(0);
+  var cell2 = row.insertCell(1);
+  var cell3 = row.insertCell(2);
+  var cell4 = row.insertCell(3);
+  var cell5 = row.insertCell(4);
+  document.getElementById("doaml").innerText = ngay +"/" + thangtru +"/"+ nam  ;
+  document.getElementById("doaml1").innerText =h + ":" + m + ":" + s;
+  cell4.innerHTML =  document.getElementById("doam").innerText;
+  cell1.innerHTML =document.getElementById("doaml").innerText;
+  cell5.innerHTML =  document.getElementById("khongkhi").innerText;
+  cell2.innerHTML =  document.getElementById("doaml1").innerText;
+  cell3.innerHTML =  document.getElementById("nhietdo").innerText;
+}
+var myVar = setInterval(myFunction, 5000)
+
+
+
+</script>
+
+
+
+<script>
+
+    function ExportToExcel(type, fn, dl) {
+        var elt = document.getElementById('tbl_exporttable_to_xls');
+        var wb = XLSX.utils.table_to_book(elt, { sheet: "sheet1" });
+        return dl ?
+            XLSX.write(wb, { bookType: type, bookSST: true, type: 'base64' }) :
+            XLSX.writeFile(wb, fn || ('MySheetName.' + (type || 'xlsx')));
+    }
+
+    
+
+</script>
+</body>
+</html>
